@@ -51,18 +51,20 @@ class TableTestTimer(object):
 
     return results
 
-class TableTestPython(TableTestTimer):
+class TableTestPy(TableTestTimer):
   def body(self,
            table_size,
            repeat=DEFAULT_REPEAT,
            number=DEFAULT_NUMBER,
-           verbose=False):
+           verbose=False,
+           warmup=False):
     timer = timeit.Timer(
       setup=('from numpy.random import rand;'
              'table = rand(table_size, table_size).tolist();'),
       stmt='timeit_fn(table)',
       globals={"table_size": table_size, "timeit_fn": self.timeit_fn})
-    warmup_times = timer.repeat(repeat=WARMUP_REPEAT, number=WARMUP_NUMBER)
+    if warmup:
+      warmup_times = timer.repeat(repeat=WARMUP_REPEAT, number=WARMUP_NUMBER)
     times = timer.repeat(repeat=repeat, number=number)
 
     return times
@@ -72,13 +74,15 @@ class TableTestNp(TableTestTimer):
            table_size,
            repeat=DEFAULT_REPEAT,
            number=DEFAULT_NUMBER,
-           verbose=False):
+           verbose=False,
+           warmup=False):
     timer = timeit.Timer(
       setup=('from numpy.random import rand;'
              'table = rand(table_size, table_size);'),
       stmt='timeit_fn(table)',
       globals={"table_size": table_size, "timeit_fn": self.timeit_fn})
-    warmup_times = timer.repeat(repeat=WARMUP_REPEAT, number=WARMUP_NUMBER)
+    if warmup:
+      warmup_times = timer.repeat(repeat=WARMUP_REPEAT, number=WARMUP_NUMBER)
     times = timer.repeat(repeat=repeat, number=number)
 
     return times
@@ -88,6 +92,7 @@ class TableTestTf(TableTestTimer):
            table_size,
            repeat=DEFAULT_REPEAT,
            number=DEFAULT_NUMBER,
-           verbose=False):
+           verbose=False,
+           warmup=False):
     times = None
     return times
