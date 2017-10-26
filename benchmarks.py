@@ -94,5 +94,21 @@ class TableTestTf(TableTestTimer):
            number=DEFAULT_NUMBER,
            verbose=False,
            warmup=False):
-    times = None
+
+    timer = timeit.Timer(
+      setup=('from numpy.random import rand;'
+             'import tensorflow as tf;'
+             'table = rand(table_size, table_size);'
+             'ops = timeit_fn(table);'
+             'session = tf.Session();'
+             'session.run(tf.global_variables_initializer());'),
+      stmt='session.run(ops)',
+      globals={"table_size": table_size, "timeit_fn": self.timeit_fn})
+    if warmup:
+      warmup_times = timer.repeat(repeat=WARMUP_REPEAT, number=WARMUP_NUMBER)
+    times = timer.repeat(repeat=repeat, number=number)
+
+    return times
+
+
     return times
