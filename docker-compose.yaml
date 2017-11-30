@@ -1,0 +1,12 @@
+version: "2"
+services:
+  tensorflow-tutorial:
+    image: gcr.io/tensorflow/tensorflow:1.4.0-py3
+    container_name: tensorflow-tutorial
+    ports:
+      - "8888:8888"
+    expose:
+      - "8888"
+    volumes:
+      - ./tutorial:/tutorial
+    command: jupyter notebook --notebook-dir=/tutorial --allow-root
