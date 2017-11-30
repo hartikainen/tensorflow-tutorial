@@ -190,6 +190,27 @@ class MatPowTestNp(MatPowTestTimer):
 
     return times
 
+class MatPowTestTf(MatPowTestTimer):
+  def body(self,
+           data_size,
+           repeat=DEFAULT_REPEAT,
+           number=DEFAULT_NUMBER,
+           verbose=False,
+           warmup=False):
 
+    data_shape = (data_size, data_size)
+    timer = timeit.Timer(
+      setup=('import tensorflow as tf;'
+             'data = data_generator(data_shape);'
+             'ops = timeit_fn(data);'
+             'session = tf.Session();'
+             'session.run(tf.global_variables_initializer());'),
+      stmt='session.run(ops)',
+      globals={"data_generator": self.data_generator,
+               "timeit_fn": self.timeit_fn,
+               "data_shape": data_shape})
+    if warmup:
+      warmup_times = timer.repeat(repeat=WARMUP_REPEAT, number=WARMUP_NUMBER)
+    times = timer.repeat(repeat=repeat, number=number)
 
     return times
